@@ -71,6 +71,9 @@ public class BeerApp {
 	private JTextField secondDD;
 	private JTextField quantity_b2c;
 	private JTextField quantity_b2b;
+	private JTextField salaryIncreaseAmount;
+	private String employeeSalaryName;
+	private JTextField salaryDecreaseAmount;
 	
 	/**
 	 * Launch the application.
@@ -103,6 +106,16 @@ public class BeerApp {
 	public BeerApp() {
 		initialize();
 	}
+	
+//	private static ImageIcon createImageIcon(String path, String description){
+//		java.net.URL imgURL = BeerApp.class.getResource(path);
+//		if (imgURL != null) {
+//			return new ImageIcon(imgURL, description);
+//		}else {
+//			System.err.println("Couldn't find file: " + path);
+//			return null;
+//		}
+//	}
 
 	/**
 	 * Initialize the contents of the frame.
@@ -125,6 +138,7 @@ public class BeerApp {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				popup.setVisible(false);
+				
 			}
 		});
 		btnNewButton.setBounds(148, 243, 153, 29);
@@ -166,12 +180,12 @@ public class BeerApp {
 		lblPossibleQuerries.setBounds(35, 132, 300, 55);
 		frame.getContentPane().add(lblPossibleQuerries);
 		
-		ImageIcon beerIcon = new ImageIcon("images/header3.jpg");
+		ImageIcon beerIcon = new ImageIcon(BeerApp.class.getResource("/images/header3.jpg"));
 		Image beer = beerIcon.getImage();
 		Image scaledBeer = beer.getScaledInstance(815, 351, Image.SCALE_SMOOTH);
 		beerIcon = new ImageIcon(scaledBeer);
 		
-		ImageIcon beerBody = new ImageIcon("images/taps.jpg");
+		ImageIcon beerBody = new ImageIcon(BeerApp.class.getResource("/images/taps.jpg"));
 		Image beer2 = beerBody.getImage();
 		Image scaledBeer2 = beer2.getScaledInstance(513, 322, Image.SCALE_SMOOTH);
 		beerBody = new ImageIcon(scaledBeer2);
@@ -192,6 +206,107 @@ public class BeerApp {
 		btnExit.setFont(new Font("Kohinoor Bangla", Font.BOLD, 20));
 		btnExit.setBounds(35, 523, 85, 38);
 		frame.getContentPane().add(btnExit);
+		
+		JDesktopPane q5Pane = new JDesktopPane();
+		q5Pane.setBackground(new Color(51, 102, 153));
+		q5Pane.setBounds(374, 154, 473, 390);
+		frame.getContentPane().add(q5Pane);
+		q5Pane.setVisible(false);
+		
+		JLabel lblSelectEmployee = new JLabel("Employee:");
+		lblSelectEmployee.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblSelectEmployee.setForeground(Color.WHITE);
+		lblSelectEmployee.setBounds(6, 36, 123, 20);
+		q5Pane.add(lblSelectEmployee);
+		
+		JComboBox<String> salaryEmployeeList = new JComboBox<String>();
+		salaryEmployeeList.setBounds(141, 34, 217, 27);
+		q5Pane.add(salaryEmployeeList);
+		
+		JLabel lblIncreaseSalaryBy = new JLabel("Increase Salary By:");
+		lblIncreaseSalaryBy.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblIncreaseSalaryBy.setForeground(Color.WHITE);
+		lblIncreaseSalaryBy.setBounds(6, 175, 123, 20);
+		q5Pane.add(lblIncreaseSalaryBy);
+		
+		salaryIncreaseAmount = new JTextField();
+		salaryIncreaseAmount.setBounds(141, 172, 294, 29);
+		q5Pane.add(salaryIncreaseAmount);
+		salaryIncreaseAmount.setColumns(10);
+		
+		JTextPane currentSalaryField = new JTextPane();
+		currentSalaryField.setFont(new Font("Lucida Grande", Font.BOLD, 18));
+		currentSalaryField.setForeground(Color.WHITE);
+		currentSalaryField.setBackground(new Color(0, 153, 204));
+		currentSalaryField.setBounds(141, 89, 294, 55);
+		q5Pane.add(currentSalaryField);
+		
+		
+		
+		
+		
+		
+		
+		JLabel lblCurrentSalary = new JLabel("Current Salary:");
+		lblCurrentSalary.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblCurrentSalary.setForeground(Color.WHITE);
+		lblCurrentSalary.setBounds(6, 101, 123, 20);
+		q5Pane.add(lblCurrentSalary);
+		
+		
+		JButton salaryEmployeeSelect = new JButton("SELECT");
+		salaryEmployeeSelect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String employee = (String) salaryEmployeeList.getSelectedItem();
+				
+				try{
+					String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+					Connection con = DriverManager.getConnection(url, "cs421g23", "beerDB2016");
+					Statement statement = con.createStatement();
+					
+					if(con != null){
+						System.out.println("Connected to Database");
+					}
+					
+					String insert_sql = "SELECT salary FROM employee WHERE name = '"+employee+"';";
+					System.out.println(insert_sql);
+					java.sql.ResultSet rs = statement.executeQuery(insert_sql);
+					
+					
+					while (rs.next()) {
+						String salary = rs.getString("salary");
+						currentSalaryField.setText(salary);
+					}
+								
+				} catch (SQLException error) {
+					int sqlCode = error.getErrorCode();
+					String sqlState = error.getSQLState();
+					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
+				}
+				
+				
+			}
+		});
+		salaryEmployeeSelect.setBounds(370, 33, 97, 29);
+		q5Pane.add(salaryEmployeeSelect);
+		
+		JLabel lblDecreaseSalaryBy = new JLabel("Decrease Salary By:");
+		lblDecreaseSalaryBy.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblDecreaseSalaryBy.setForeground(Color.WHITE);
+		lblDecreaseSalaryBy.setBounds(6, 222, 123, 20);
+		q5Pane.add(lblDecreaseSalaryBy);
+		
+		salaryDecreaseAmount = new JTextField();
+		salaryDecreaseAmount.setColumns(10);
+		salaryDecreaseAmount.setBounds(141, 213, 294, 29);
+		q5Pane.add(salaryDecreaseAmount);
+		
+		
 		
 		JDesktopPane q4Pane4 = new JDesktopPane();
 		q4Pane4.setBackground(new Color(51, 102, 153));
@@ -1327,6 +1442,7 @@ public class BeerApp {
 				q4Pane2.setVisible(false);
 				q4Pane3.setVisible(false);
 				q4Pane4.setVisible(false);
+				q5Pane.setVisible(false);
 				
 				
 			}
@@ -1336,6 +1452,81 @@ public class BeerApp {
 		btnHome.setBounds(132, 523, 85, 38);
 		frame.getContentPane().add(btnHome);
 		btnHome.setVisible(false);
+		
+		
+		JButton salaryApply = new JButton("APPLY");
+		salaryApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String currentSalary = currentSalaryField.getText();
+				double currentSalaryReal = Double.parseDouble(currentSalary);
+				String updateSalary = salaryIncreaseAmount.getText();
+				double updateSalaryReal = Double.parseDouble(updateSalary);
+				String decreaseSalary = salaryDecreaseAmount.getText();
+				double decreaseSalaryReal = Double.parseDouble(decreaseSalary);
+				double newSalary = currentSalaryReal + updateSalaryReal - decreaseSalaryReal;
+				String employee = (String) salaryEmployeeList.getSelectedItem();
+				
+				System.out.println("New Salary = "+newSalary);
+				
+				
+ 
+				
+				try{
+					String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+					Connection con = DriverManager.getConnection(url, "cs421g23", "beerDB2016");
+					Statement statement = con.createStatement();
+					
+					if(con != null){
+						System.out.println("Connected to Database");
+					}
+					
+
+					
+					String insert_sql = "UPDATE employee SET SALARY = "+newSalary+" WHERE employee.name = '"+employee+"' ;";
+					System.out.println(insert_sql);
+					statement.executeUpdate(insert_sql);
+					
+					//popup sucess
+					
+					String message = "Success. Salary updated for " + employee+ ".";
+					
+					popup.setVisible(true);
+					textPanePopup.setText(message);
+					
+					textPane.setText("");
+					scrollPane.setVisible(false);
+					beerBodyImage.setVisible(true);
+					btnHome.setVisible(false);
+					query2Pane.setVisible(false);
+					q3Panel.setVisible(false);
+					q4Pane.setVisible(false);
+					q4Pane1.setVisible(false);
+					q4Pane2.setVisible(false);
+					q4Pane3.setVisible(false);
+					q4Pane4.setVisible(false);
+					q5Pane.setVisible(false);
+		
+					
+					
+					
+				} catch (SQLException error) {
+					int sqlCode = error.getErrorCode();
+					String sqlState = error.getSQLState();
+					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
+				}
+				
+				
+				
+				
+			}
+		});
+		salaryApply.setBounds(185, 325, 97, 29);
+		q5Pane.add(salaryApply);
 
 		
 		//First Query: SELECT name FROM beer;
@@ -1356,6 +1547,7 @@ public class BeerApp {
 				q4Pane2.setVisible(false);
 				q4Pane3.setVisible(false);
 				q4Pane4.setVisible(false);
+				q5Pane.setVisible(false);
 				
 				//case 1 query
 				try{
@@ -1421,6 +1613,7 @@ public class BeerApp {
 				q4Pane2.setVisible(false);
 				q4Pane3.setVisible(false);
 				q4Pane4.setVisible(false);
+				q5Pane.setVisible(false);
 				
 				beerNameTF.setText("");
 				beerPerTF.setText("");
@@ -1456,6 +1649,7 @@ public class BeerApp {
 				q4Pane2.setVisible(false);
 				q4Pane3.setVisible(false);
 				q4Pane4.setVisible(false);
+				q5Pane.setVisible(false);
 				
 				
 	
@@ -1480,13 +1674,20 @@ public class BeerApp {
 				q4Pane2.setVisible(false);
 				q4Pane3.setVisible(false);
 				q4Pane4.setVisible(false);
+				q5Pane.setVisible(false);
 				
 				employeeList_b2c.removeAllItems();
 				customerList_b2c.removeAllItems();
 				beerList_b2c.removeAllItems();
 				b2cEstablishment.removeAllItems();
-				
-				
+				companyList_b2b.removeAllItems();
+				establishmentList_b2b.removeAllItems();
+				beer_b2b.removeAllItems();
+				quantity.setText("");
+				companyEmployee_b2b.removeAllItems();
+				establishmentEmployee_b2b.removeAllItems();
+				quantity_b2b.setText("");
+								
 				
 				//update new values into b2cEstablishment combobox list
 				
@@ -1531,12 +1732,60 @@ public class BeerApp {
 		JButton btnQuery_4 = new JButton("5. Update Salary for Employee");
 		btnQuery_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				beerBodyImage.setVisible(false);
+				btnHome.setVisible(true);
+				query2Pane.setVisible(false);
+				q3Panel.setVisible(false);
+				scrollPane.setVisible(false);
+				q4Pane.setVisible(true);
+				q4Pane1.setVisible(false);
+				q4Pane2.setVisible(false);
+				q4Pane3.setVisible(false);
+				q4Pane4.setVisible(false);
+				q5Pane.setVisible(true);
+				
+				salaryEmployeeList.removeAllItems();
+				currentSalaryField.setText("");
+				salaryIncreaseAmount.setText("0");
+				salaryDecreaseAmount.setText("0");
+				
+				
+				
+				try{
+					String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+					Connection con = DriverManager.getConnection(url, "cs421g23", "beerDB2016");
+					Statement statement = con.createStatement();
+					
+					if(con != null){
+						System.out.println("Connected to Database");
+					}
+					
+					String insert_sql = "SELECT name FROM employee";
+					System.out.println(insert_sql);
+					java.sql.ResultSet rs = statement.executeQuery(insert_sql);
+					
+					
+					while (rs.next()) {
+						String name = rs.getString("name");
+						salaryEmployeeList.addItem(name);
+					}
+								
+				} catch (SQLException error) {
+					int sqlCode = error.getErrorCode();
+					String sqlState = error.getSQLState();
+					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
+				}
+	
+				
 			}
 		});
 		btnQuery_4.setBounds(35, 451, 300, 55);
 		frame.getContentPane().add(btnQuery_4);
-		
-
 		
 	}
 }
