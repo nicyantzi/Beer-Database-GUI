@@ -19,6 +19,9 @@ import javax.swing.JTextArea;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.GridBagConstraints;
@@ -37,7 +40,10 @@ import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.io.*;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -64,6 +70,7 @@ public class BeerApp {
 	private JTextField secondMM;
 	private JTextField secondDD;
 	private JTextField quantity_b2c;
+	private JTextField quantity_b2b;
 	
 	/**
 	 * Launch the application.
@@ -87,7 +94,6 @@ public class BeerApp {
 			System.out.println("Class Not Found Exception");
 		}	
 		System.out.println("Here");
-		
 	
 	}
 
@@ -108,12 +114,43 @@ public class BeerApp {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		
+		//popup window
 		popup = new JFrame();
-		popup.getContentPane().setBackground(new Color(0, 50, 100));
-		popup.setBounds(200, 200, 400, 300);
+		popup.setBounds(300, 300, 450, 300);
 		popup.getContentPane().setLayout(null);
+		popup.setVisible(false);
 		
+		
+		JButton btnNewButton = new JButton("CLOSE WINDOW");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				popup.setVisible(false);
+			}
+		});
+		btnNewButton.setBounds(148, 243, 153, 29);
+		popup.getContentPane().add(btnNewButton);
+		
+		JLabel popupTitle = new JLabel("Beer Database Access Confirmation");
+		popupTitle.setBounds(0, 0, 450, 30);
+		popupTitle.setForeground(new Color(51, 102, 153));
+		popupTitle.setFont(new Font("Kohinoor Bangla", Font.BOLD, 20));
+		popupTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		popup.getContentPane().add(popupTitle);
+		
+		JDesktopPane messagePane = new JDesktopPane();
+		messagePane.setBackground(new Color(51, 102, 153));
+		messagePane.setBounds(18, 31, 413, 200);
+		popup.getContentPane().add(messagePane);
+		
+		JTextPane textPanePopup = new JTextPane();
+		textPanePopup.setForeground(Color.WHITE);
+		textPanePopup.setFont(new Font("Kohinoor Bangla", Font.PLAIN, 16));
+
+		textPanePopup.setBackground(new Color(0, 153, 204));
+		textPanePopup.setBounds(6, 6, 401, 188);
+		messagePane.add(textPanePopup);
+		
+		//popup
 		
 		JLabel lblNewLabel = new JLabel("BEER DATABASE ACCESS");
 		lblNewLabel.setBackground(new Color(173, 216, 230));
@@ -122,7 +159,6 @@ public class BeerApp {
 		lblNewLabel.setFont(new Font("Kohinoor Bangla", Font.BOLD, 60));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		frame.getContentPane().add(lblNewLabel);
-		
 		
 		JLabel lblPossibleQuerries = new JLabel("Possible Queries:");
 		lblPossibleQuerries.setForeground(Color.WHITE);
@@ -157,6 +193,318 @@ public class BeerApp {
 		btnExit.setBounds(35, 523, 85, 38);
 		frame.getContentPane().add(btnExit);
 		
+		JDesktopPane q4Pane4 = new JDesktopPane();
+		q4Pane4.setBackground(new Color(51, 102, 153));
+		q4Pane4.setBounds(374, 154, 473, 390);
+		frame.getContentPane().add(q4Pane4);
+		q4Pane4.setVisible(false);
+		
+		JLabel lblCompanyEmployee = new JLabel("Company Employee (Seller)");
+		lblCompanyEmployee.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblCompanyEmployee.setForeground(Color.WHITE);
+		lblCompanyEmployee.setBounds(21, 50, 191, 27);
+		q4Pane4.add(lblCompanyEmployee);
+		
+		JLabel lblEstablishmentEmployee = new JLabel("Establishment Employee (Buyer)");
+		lblEstablishmentEmployee.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblEstablishmentEmployee.setForeground(Color.WHITE);
+		lblEstablishmentEmployee.setBounds(6, 100, 206, 28);
+		q4Pane4.add(lblEstablishmentEmployee);
+		
+		JLabel lblBeer = new JLabel("Beer");
+		lblBeer.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblBeer.setForeground(Color.WHITE);
+		lblBeer.setBounds(69, 155, 143, 27);
+		q4Pane4.add(lblBeer);
+		
+		JLabel lblQuantity = new JLabel("Quantity");
+		lblQuantity.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblQuantity.setForeground(Color.WHITE);
+		lblQuantity.setBounds(69, 210, 143, 27);
+		q4Pane4.add(lblQuantity);
+		
+		JComboBox<String> companyEmployee_b2b = new JComboBox<String>();
+		companyEmployee_b2b.setBounds(224, 51, 231, 27);
+		q4Pane4.add(companyEmployee_b2b);
+		
+		JComboBox<String> establishmentEmployee_b2b = new JComboBox<String>();
+		establishmentEmployee_b2b.setBounds(224, 101, 231, 27);
+		q4Pane4.add(establishmentEmployee_b2b);
+		
+		JComboBox<String> beer_b2b = new JComboBox<String>();
+		beer_b2b.setBounds(224, 156, 231, 27);
+		q4Pane4.add(beer_b2b);
+		
+		quantity_b2b = new JTextField();
+		quantity_b2b.setColumns(10);
+		quantity_b2b.setBounds(224, 210, 223, 27);
+		q4Pane4.add(quantity_b2b);
+		
+		JButton button = new JButton("SUBMIT");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//take values from b2b transaction and insert the appropriate data into database. 
+				
+				//1. b2b 
+				//2. transaction
+				//3. sellstype
+				
+				Integer b2bQuantity = 0;
+				
+				try {
+					if(quantity_b2b.getText() != null){
+						b2bQuantity = Integer.parseInt(quantity_b2b.getText());
+					}
+				}
+				catch (NumberFormatException error){
+					b2bQuantity = 0;
+				}
+				String companyEmployee = (String) companyEmployee_b2b.getSelectedItem();
+				String establishmentEmployee = (String) establishmentEmployee_b2b.getSelectedItem();
+				String beer = (String) beer_b2b.getSelectedItem();
+				
+				
+				
+				if(b2bQuantity != 0 && companyEmployee != null && establishmentEmployee != null && beer != null){
+					LocalDate date = LocalDate.now();
+					
+					SimpleDateFormat formatter = new SimpleDateFormat("hh:mm:ss");
+					Date now = new Date();
+					System.out.println(formatter.format(now));
+					
+					
+					int maxTid = 0;
+					String newTid = "";
+					
+					try{
+						String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+						Connection con = DriverManager.getConnection(url, "cs421g23", "beerDB2016");
+						Statement statement = con.createStatement();
+						
+						if(con != null){
+							System.out.println("Connected to Database");
+						}
+						
+						
+						//insert into transaction
+						
+						String insert_sql = "SELECT tid FROM transaction;";
+						System.out.println(insert_sql);
+						java.sql.ResultSet rs = statement.executeQuery(insert_sql);
+						
+						
+						while (rs.next()) {
+							String tid = rs.getString("tid");
+							tid.replace("^0", "");
+
+							
+							int tidInt = Integer.parseInt(tid);
+							
+							if (maxTid < tidInt){
+								maxTid = tidInt;
+							}
+							int lengthCurrentMaxTid = (int)(Math.log10(maxTid+1)+1);
+							System.out.println("Lenght of Max Cid = "+ lengthCurrentMaxTid);
+							
+							int numberOfZeroes = 6 - lengthCurrentMaxTid;
+							
+							newTid = "";
+							for(int i = 0; i < numberOfZeroes; i++){
+								newTid = newTid + "0";
+							}
+							newTid = newTid + (maxTid+1);
+						}
+						
+						
+						String insert_sql2 = "INSERT INTO transaction (tid, date, time, quantity) VALUES ('"+newTid+"', '"+date+"', '"+(formatter.format(now))+"', "+b2bQuantity+");";
+						System.out.println(insert_sql2);
+						statement.executeUpdate(insert_sql2);
+						
+					
+						//insert into b2b
+						
+						String companyEmployeeId = "";
+						String establishmentEmployeeId = "";
+						String beerId = "";
+						
+						String insert_sql3 = "SELECT employeeid FROM employee WHERE name = '"+companyEmployee+"';";
+						System.out.println(insert_sql3);
+						java.sql.ResultSet rs3 = statement.executeQuery(insert_sql3);
+						
+						while (rs3.next()) {
+							companyEmployeeId = rs3.getString("employeeid");
+							
+						}
+						String insert_sql4 = "SELECT employeeid FROM employee WHERE name = '"+establishmentEmployee+"';";
+						System.out.println(insert_sql4);
+						java.sql.ResultSet rs4 = statement.executeQuery(insert_sql4);
+						
+						while (rs4.next()) {
+							establishmentEmployeeId = rs4.getString("employeeid");
+							
+						}
+						String insert_sql5 = "SELECT beerid FROM beer WHERE name = '"+beer+"';";
+						System.out.println(insert_sql5);
+						java.sql.ResultSet rs5 = statement.executeQuery(insert_sql5);
+						
+						while (rs5.next()) {
+							beerId = rs5.getString("beerid");
+							
+						}
+						
+						String insert_sql6 = "INSERT INTO b2b (tid, establishmentbuyerid, companysellerid, beerid) VALUES ('"+newTid+"', '"+establishmentEmployeeId+"', '"+companyEmployeeId+"', '"+beerId+"');";
+						System.out.println(insert_sql6);
+						statement.executeUpdate(insert_sql6);
+						
+						
+						//insert into sellstype
+						
+						//need eid and beerid
+						
+						String eid ="";
+						
+						String insert_sql7 = "SELECT eid FROM establishmentemployee WHERE employeeid = '"+establishmentEmployeeId+"';";
+						System.out.println(insert_sql7);
+						java.sql.ResultSet rs7 = statement.executeQuery(insert_sql7);
+						
+						while (rs7.next()) {
+							eid = rs7.getString("eid");
+							
+						}
+						String insert_sql8 = "INSERT INTO sellstype (beerid, eid) SELECT '"+beerId+"', '"+eid+"' WHERE NOT EXISTS ( SELECT eid FROM sellstype WHERE eid = '"+eid+"');";
+						System.out.println(insert_sql8);
+						statement.executeUpdate(insert_sql8);
+						
+						
+						//popup sucess
+						
+						String message = "Success. All appropriate data for a B2B transaction has been inserted into the database.";
+						
+						popup.setVisible(true);
+						textPanePopup.setText(message);
+						
+						
+									
+					} catch (SQLException error) {
+						int sqlCode = error.getErrorCode();
+						String sqlState = error.getSQLState();
+						System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+						String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+						
+						popup.setVisible(true);
+						textPanePopup.setText(errorPrint);
+
+					}
+					
+					
+				} else {
+					
+					String inputError = "Incorrect input, please try again.";
+					popup.setVisible(true);
+					textPanePopup.setText(inputError);
+					
+				}
+			
+				
+				
+			}
+		});
+		button.setBounds(171, 315, 117, 29);
+		q4Pane4.add(button);
+		
+		JDesktopPane q4Pane3 = new JDesktopPane();
+		q4Pane3.setBackground(new Color(51, 102, 153));
+		q4Pane3.setBounds(374, 154, 473, 390);
+		frame.getContentPane().add(q4Pane3);
+		q4Pane3.setVisible(false);
+		
+		JLabel lblWhichCompanyIs = new JLabel("Which Company is Selling Beer?");
+		lblWhichCompanyIs.setHorizontalAlignment(SwingConstants.LEFT);
+		lblWhichCompanyIs.setForeground(Color.WHITE);
+		lblWhichCompanyIs.setBounds(6, 17, 316, 16);
+		q4Pane3.add(lblWhichCompanyIs);
+		
+		JLabel lblWhichEstablishmentIs = new JLabel("Which Establishment is Buying Beer?");
+		lblWhichEstablishmentIs.setHorizontalAlignment(SwingConstants.LEFT);
+		lblWhichEstablishmentIs.setForeground(Color.WHITE);
+		lblWhichEstablishmentIs.setBounds(6, 95, 316, 16);
+		q4Pane3.add(lblWhichEstablishmentIs);
+		
+		JComboBox<String> companyList_b2b = new JComboBox<String>();
+		companyList_b2b.setBounds(34, 45, 250, 27);
+		q4Pane3.add(companyList_b2b);
+		
+		JComboBox<String> establishmentList_b2b = new JComboBox<String>();
+		establishmentList_b2b.setBounds(34, 130, 250, 27);
+		q4Pane3.add(establishmentList_b2b);
+		
+		JButton b2bNext = new JButton("NEXT");
+		b2bNext.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				q4Pane3.setVisible(false);
+				q4Pane4.setVisible(true);
+				
+				//populate the company, establishment employee lists as well as the beer list <- reflects the beer that the company sells.
+				
+				String companyB2B = (String) companyList_b2b.getSelectedItem();
+				String establishmentB2B = (String) establishmentList_b2b.getSelectedItem();
+				
+				try{
+					String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+					Connection con = DriverManager.getConnection(url, "cs421g23", "beerDB2016");
+					Statement statement = con.createStatement();
+					
+					if(con != null){
+						System.out.println("Connected to Database");
+					}
+					
+					String insert_sql = "SELECT employee.name from companyemployee INNER JOIN company ON companyemployee.cid = company.cid INNER JOIN employee ON companyemployee.employeeid = employee.employeeid WHERE company.name = '"+companyB2B+"';";
+					System.out.println(insert_sql);
+					java.sql.ResultSet rs = statement.executeQuery(insert_sql);
+					
+					
+					while (rs.next()) {
+						String name = rs.getString("name");
+						companyEmployee_b2b.addItem(name);
+					}
+					
+					String insert_sql2 = "SELECT employee.name from establishmentemployee INNER JOIN establishment ON establishmentemployee.eid = establishment.eid INNER JOIN employee ON establishmentemployee.employeeid = employee.employeeid WHERE establishment.name = '"+establishmentB2B+"';";
+					System.out.println(insert_sql2);
+					java.sql.ResultSet rs2 = statement.executeQuery(insert_sql2);
+					
+					
+					while (rs2.next()) {
+						String name = rs2.getString("name");
+						establishmentEmployee_b2b.addItem(name);
+					}
+					
+					String insert_sql3 = "select beer.name FROM beer INNER JOIN company ON beer.cid = company.cid WHERE company.name = '"+companyB2B+"';";
+
+					System.out.println(insert_sql3);
+					java.sql.ResultSet rs3 = statement.executeQuery(insert_sql3);
+					
+					
+					while (rs3.next()) {
+						String name = rs3.getString("name");
+						beer_b2b.addItem(name);
+					}
+					
+				} catch (SQLException error) {
+					int sqlCode = error.getErrorCode();
+					String sqlState = error.getSQLState();
+					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
+				}
+				
+			}
+		});
+		b2bNext.setBounds(186, 335, 117, 29);
+		q4Pane3.add(b2bNext);
+		
 		JDesktopPane q4Pane2 = new JDesktopPane();
 		q4Pane2.setBackground(new Color(51, 102, 153));
 		q4Pane2.setBounds(374, 154, 473, 390);
@@ -169,7 +517,7 @@ public class BeerApp {
 		lblEmployee.setBounds(128, 36, 61, 23);
 		q4Pane2.add(lblEmployee);
 		
-		JComboBox employeeList_b2c = new JComboBox();
+		JComboBox<String> employeeList_b2c = new JComboBox<String>();
 		employeeList_b2c.setBounds(216, 35, 231, 27);
 		q4Pane2.add(employeeList_b2c);
 		
@@ -179,7 +527,7 @@ public class BeerApp {
 		customer.setBounds(128, 80, 61, 23);
 		q4Pane2.add(customer);
 		
-		JComboBox customerList_b2c = new JComboBox();
+		JComboBox<String> customerList_b2c = new JComboBox<String>();
 		customerList_b2c.setBounds(216, 74, 231, 36);
 		q4Pane2.add(customerList_b2c);
 		
@@ -189,7 +537,7 @@ public class BeerApp {
 		beerb2c.setBounds(128, 122, 61, 23);
 		q4Pane2.add(beerb2c);
 		
-		JComboBox beerList_b2c = new JComboBox();
+		JComboBox<String> beerList_b2c = new JComboBox<String>();
 		beerList_b2c.setBounds(216, 122, 231, 24);
 		q4Pane2.add(beerList_b2c);
 		
@@ -205,6 +553,137 @@ public class BeerApp {
 		quantity_b2c.setColumns(10);
 		
 		JButton btnSubmit_1 = new JButton("SUBMIT");
+		btnSubmit_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String quantity = quantity_b2c.getText();
+				Integer quantity_b2c = Integer.parseInt(quantity);
+				
+				String employee = (String) employeeList_b2c.getSelectedItem();
+				String customer = (String) customerList_b2c.getSelectedItem();
+				String beer = (String) beerList_b2c.getSelectedItem();
+				
+				
+				
+				if (quantity != null && quantity_b2c != null && employee != null && customer != null && beer != null ) {
+					LocalDate date = LocalDate.now();
+					
+					SimpleDateFormat formatter = new SimpleDateFormat("hh:mm:ss");
+					Date now = new Date();
+					System.out.println(formatter.format(now));
+					
+					
+					int maxTid = 0;
+					String newTid = "";
+					
+					try{
+						String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+						Connection con = DriverManager.getConnection(url, "cs421g23", "beerDB2016");
+						Statement statement = con.createStatement();
+						
+						if(con != null){
+							System.out.println("Connected to Database");
+						}
+						
+						String insert_sql = "SELECT tid FROM transaction;";
+						System.out.println(insert_sql);
+						java.sql.ResultSet rs = statement.executeQuery(insert_sql);
+						
+						
+						while (rs.next()) {
+							String tid = rs.getString("tid");
+							tid.replace("^0", "");
+
+							
+							int tidInt = Integer.parseInt(tid);
+							
+							if (maxTid < tidInt){
+								maxTid = tidInt;
+							}
+							int lengthCurrentMaxTid = (int)(Math.log10(maxTid+1)+1);
+							System.out.println("Lenght of Max Cid = "+ lengthCurrentMaxTid);
+							
+							int numberOfZeroes = 6 - lengthCurrentMaxTid;
+							
+							newTid = "";
+							for(int i = 0; i < numberOfZeroes; i++){
+								newTid = newTid + "0";
+							}
+							newTid = newTid + (maxTid+1);
+							System.out.println("New Beer Id = "+ newTid);
+						}
+						
+						String insert_sql2 = "INSERT INTO transaction (tid, date, time, quantity) VALUES ('"+newTid+"', '"+date+"', '"+(formatter.format(now))+"', "+quantity_b2c+");";
+						System.out.println(insert_sql2);
+						statement.executeUpdate(insert_sql2);
+						
+					
+						//need memberId, employeeId, beerId
+						
+						String memberId = "";
+						String employeeId = "";
+						String beerId = "";
+						
+						String insert_sql3 = "SELECT memberid FROM buyer WHERE name = '"+customer+"';";
+						System.out.println(insert_sql3);
+						java.sql.ResultSet rs3 = statement.executeQuery(insert_sql3);
+						
+						while (rs3.next()) {
+							memberId = rs3.getString("memberid");
+							
+						}
+						String insert_sql4 = "SELECT employeeid FROM employee WHERE name = '"+employee+"';";
+						System.out.println(insert_sql4);
+						java.sql.ResultSet rs4 = statement.executeQuery(insert_sql4);
+						
+						while (rs4.next()) {
+							employeeId = rs4.getString("employeeid");
+							
+						}
+						String insert_sql5 = "SELECT beerid FROM beer WHERE name = '"+beer+"';";
+						System.out.println(insert_sql5);
+						java.sql.ResultSet rs5 = statement.executeQuery(insert_sql5);
+						
+						while (rs5.next()) {
+							beerId = rs5.getString("beerid");
+							
+						}
+						
+						String insert_sql6 = "INSERT INTO b2c (tid, memberid, employeeid, beerid) VALUES ('"+newTid+"', '"+memberId+"', '"+employeeId+"', '"+beerId+"');";
+						System.out.println(insert_sql6);
+						statement.executeUpdate(insert_sql6);
+						
+						
+						//popup success
+						
+						String message = "Success. All appropriate data for a B2C transaction has been inserted into the database.";
+						
+						popup.setVisible(true);
+						textPanePopup.setText(message);
+						
+									
+					} catch (SQLException error) {
+						int sqlCode = error.getErrorCode();
+						String sqlState = error.getSQLState();
+						System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+						String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+						
+						popup.setVisible(true);
+						textPanePopup.setText(errorPrint);
+						
+					}
+					
+				}else{
+					//popup failure
+					String inputError = "Incorrect input, please try again.";
+					popup.setVisible(true);
+					textPanePopup.setText(inputError);
+				}
+				
+					
+				
+			}
+		});
 		btnSubmit_1.setBounds(170, 320, 117, 29);
 		q4Pane2.add(btnSubmit_1);
 		
@@ -220,7 +699,7 @@ public class BeerApp {
 		lblCustomer.setBounds(32, 23, 316, 16);
 		q4Pane1.add(lblCustomer);
 		
-		JComboBox b2cEstablishment = new JComboBox();
+		JComboBox<String> b2cEstablishment = new JComboBox<String>();
 		b2cEstablishment.setBounds(42, 53, 235, 27);
 		q4Pane1.add(b2cEstablishment);
 		
@@ -229,8 +708,8 @@ public class BeerApp {
 			public void actionPerformed(ActionEvent e) {
 				//enter info for b2c transaction at certain 
 				
+				q4Pane1.setVisible(false);
 				q4Pane2.setVisible(true);
-				
 				employeeList_b2c.removeAllItems();
 				customerList_b2c.removeAllItems();
 				beerList_b2c.removeAllItems();
@@ -248,18 +727,18 @@ public class BeerApp {
 						System.out.println("Connected to Database");
 					}
 					
-					String insert_sql = "SELECT name FROM employee INNER JOIN establishmentemployee ON employee.employeeid = establishmentemployee.employeeid;";
+					//populate the employe list
+					String insert_sql = "SELECT employee.name FROM employee INNER JOIN establishmentemployee ON employee.employeeid = establishmentemployee.employeeid INNER JOIN establishment ON establishment.eid = establishmentemployee.eid WHERE establishment.name = '"+ establishment +"';";
 					System.out.println(insert_sql);
-					java.sql.ResultSet rs = statement.executeQuery(insert_sql);
-					//java.sql.ResultSet rs2 = statement.executeQuery(insert_sql2);
-					
+					java.sql.ResultSet rs = statement.executeQuery(insert_sql);					
 					
 					while (rs.next()) {
 						String name = rs.getString("name");
 						employeeList_b2c.addItem(name);
 						System.out.println("Employee: "+name);
 					}
-					
+							
+					//populate the buyer list
 					String insert_sql2 = "SELECT name FROM buyer;";
 					System.out.println(insert_sql2);
 					java.sql.ResultSet rs2 = statement.executeQuery(insert_sql2);
@@ -271,7 +750,7 @@ public class BeerApp {
 						System.out.println("Customer: " +name);
 					}
 					
-					String insert_sql3 = "SELECT name FROM beer;";
+					String insert_sql3 = "select beer.name from sellstype INNER JOIN establishment ON sellstype.eid = establishment.eid  INNER JOIN beer ON sellstype.beerid = beer.beerid WHERE establishment.name = '"+ establishment +"';";
 					System.out.println(insert_sql3);
 					java.sql.ResultSet rs3 = statement.executeQuery(insert_sql3);
 					
@@ -286,11 +765,12 @@ public class BeerApp {
 					int sqlCode = error.getErrorCode();
 					String sqlState = error.getSQLState();
 					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
 					
-				}
-				
-				
-				
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
+					
+				}			
 				
 			}
 		});
@@ -324,7 +804,7 @@ public class BeerApp {
 			public void actionPerformed(ActionEvent e) {
 				q4Pane.setVisible(false);
 				q4Pane1.setVisible(true);
-
+				q4Pane2.setVisible(false);
 				
 			}
 		});
@@ -335,6 +815,55 @@ public class BeerApp {
 		btnBusinessToBusiness.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				q4Pane.setVisible(false);
+				q4Pane3.setVisible(true);
+				companyList_b2b.removeAllItems();
+				establishmentList_b2b.removeAllItems();
+				
+				
+				//populate companyList_b2b & establishmentList_b2b
+				
+				try{
+					String url = "jdbc:postgresql://comp421.cs.mcgill.ca:5432/cs421";
+					Connection con = DriverManager.getConnection(url, "cs421g23", "beerDB2016");
+					Statement statement = con.createStatement();
+					
+					if(con != null){
+						System.out.println("Connected to Database");
+					}
+					
+					String insert_sql = "SELECT name FROM company;";
+					System.out.println(insert_sql);
+					java.sql.ResultSet rs = statement.executeQuery(insert_sql);
+					
+					
+					while (rs.next()) {
+						String name = rs.getString("name");
+						companyList_b2b.addItem(name);
+					}
+					
+					String insert_sql2 = "SELECT name FROM establishment;";
+					System.out.println(insert_sql2);
+					java.sql.ResultSet rs2 = statement.executeQuery(insert_sql2);
+					
+					
+					while (rs2.next()) {
+						String name = rs2.getString("name");
+						establishmentList_b2b.addItem(name);
+					}
+					
+				} catch (SQLException error) {
+					int sqlCode = error.getErrorCode();
+					String sqlState = error.getSQLState();
+					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
+					
+				}
+				
+				
+				
 			}
 		});
 		btnBusinessToBusiness.setBounds(76, 153, 293, 46);
@@ -345,7 +874,6 @@ public class BeerApp {
 		lblChooseATransaction.setBounds(5, 0, 293, 26);
 		q4Pane.add(lblChooseATransaction);
 		
-
 		JDesktopPane q3Panel = new JDesktopPane();
 		q3Panel.setBackground(new Color(51, 102, 153));
 		q3Panel.setBounds(367, 183, 463, 140);
@@ -431,6 +959,10 @@ public class BeerApp {
 					int sqlCode = error.getErrorCode();
 					String sqlState = error.getSQLState();
 					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
 					
 				}
 				
@@ -503,7 +1035,7 @@ public class BeerApp {
 		String[] beerTypes = {"Ale","Pale Ale", "Lager","Stout", "Porter"};
 		//list.setLayoutOrientation(JList.VERTICAL_WRAP);
 		
-		JComboBox beerTypeList = new JComboBox(beerTypes);
+		JComboBox<?> beerTypeList = new JComboBox<Object>(beerTypes);
 		beerTypeList.setBounds(160, 123, 285, 28);
 		query2Pane.add(beerTypeList);
 		
@@ -527,7 +1059,7 @@ public class BeerApp {
 		
 		String[] beerStyles = {"Amber", "Blond", "Brown", "Honey", "IPA"};
 		
-		JComboBox beerStyleList = new JComboBox(beerStyles);
+		JComboBox<?> beerStyleList = new JComboBox<Object>(beerStyles);
 		beerStyleList.setBounds(160, 167, 285, 28);
 		query2Pane.add(beerStyleList);
 		
@@ -536,7 +1068,7 @@ public class BeerApp {
 		
 		ArrayList<String> companyNames = new ArrayList<String>();
 		
-		JComboBox companyList = new JComboBox();
+		JComboBox<String> companyList = new JComboBox<String>();
 
 		
 		try{
@@ -565,6 +1097,10 @@ public class BeerApp {
 			int sqlCode = error.getErrorCode();
 			String sqlState = error.getSQLState();
 			System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+			String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+			
+			popup.setVisible(true);
+			textPanePopup.setText(errorPrint);
 			
 		}
 		
@@ -592,15 +1128,7 @@ public class BeerApp {
 		establishmentPriceTF.setColumns(10);
 		establishmentPriceTF.setBounds(157, 294, 288, 26);
 		query2Pane.add(establishmentPriceTF);
-		
-		
-		JLabel popUpMessageSuccess = new JLabel("Beer was Submitted to the Database!");
-		popUpMessageSuccess.setForeground(Color.WHITE);
-		popUpMessageSuccess.setFont(new Font("Kohinoor Bangla", Font.BOLD, 25));
-		popUpMessageSuccess.setBounds(5, 5, 800, 50);
-		popup.getContentPane().add(popUpMessageSuccess);
-		
-		
+			
 		
 		JButton btnSubmit = new JButton("SUBMIT");
 		btnSubmit.addActionListener(new ActionListener() {
@@ -661,6 +1189,10 @@ public class BeerApp {
 					int sqlCode = error.getErrorCode();
 					String sqlState = error.getSQLState();
 					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
 					
 				}
 				
@@ -695,13 +1227,14 @@ public class BeerApp {
 					int sqlCode = error.getErrorCode();
 					String sqlState = error.getSQLState();
 					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
 					
 				}
 				
 				
-				
-				//
-
 
 				int lengthOfCurrentMaxBeerId = (int)(Math.log10(maxBeerId)+1);
 				System.out.println("Lenght of Max Cid = "+ lengthOfCurrentMaxBeerId);
@@ -740,32 +1273,35 @@ public class BeerApp {
 								", \'" + beerTypeSQL + "\', \'" + beerStyleSQL + "\', \'" + cidFromCompany + "\', " + customerPriceSQL + 
 								", " + establishmentPriceSQL + ");";
 						System.out.println(insert_sql);
-						
-						int x = frame.getX();
-						int y = frame.getY();
-						int width = frame.getWidth();
-						int height = frame.getHeight();
-						
-						popup.setBounds((width/2), (y+height/2), 500, 100);
-						System.out.println("Here");
-						popup.setVisible(true);
-						popup.getContentPane().add(popUpMessageSuccess);
+						statement.executeUpdate(insert_sql);
 
-	
-						java.sql.ResultSet rs = statement.executeQuery(insert_sql);
+						
+						//popup success
+						
+						String message = "Success. Your new beer has been entered into the Beer Database.";
+						
+						popup.setVisible(true);
+						textPanePopup.setText(message);
+						
+					
 						
 					} catch (SQLException error) {
 						int sqlCode = error.getErrorCode();
 						String sqlState = error.getSQLState();
 						System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+						String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+						
+						popup.setVisible(true);
+						textPanePopup.setText(errorPrint);
 						
 					}
-					
-					
-					
+
 					
 				} else {
-								
+					
+					String inputError = "Incorrect input, please try again.";
+					popup.setVisible(true);
+					textPanePopup.setText(inputError);			
 					
 				}
 					
@@ -789,6 +1325,8 @@ public class BeerApp {
 				q4Pane.setVisible(false);
 				q4Pane1.setVisible(false);
 				q4Pane2.setVisible(false);
+				q4Pane3.setVisible(false);
+				q4Pane4.setVisible(false);
 				
 				
 			}
@@ -816,6 +1354,8 @@ public class BeerApp {
 				q4Pane.setVisible(false);
 				q4Pane1.setVisible(false);
 				q4Pane2.setVisible(false);
+				q4Pane3.setVisible(false);
+				q4Pane4.setVisible(false);
 				
 				//case 1 query
 				try{
@@ -849,6 +1389,10 @@ public class BeerApp {
 					int sqlCode = error.getErrorCode();
 					String sqlState = error.getSQLState();
 					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
 					
 				}
 				
@@ -873,7 +1417,10 @@ public class BeerApp {
 				q3Panel.setVisible(false);
 				q4Pane.setVisible(false);
 				q4Pane.setVisible(false);
-				q4Pane.setVisible(false);
+				q4Pane1.setVisible(false);
+				q4Pane2.setVisible(false);
+				q4Pane3.setVisible(false);
+				q4Pane4.setVisible(false);
 				
 				beerNameTF.setText("");
 				beerPerTF.setText("");
@@ -907,6 +1454,8 @@ public class BeerApp {
 				q4Pane.setVisible(false);
 				q4Pane1.setVisible(false);
 				q4Pane2.setVisible(false);
+				q4Pane3.setVisible(false);
+				q4Pane4.setVisible(false);
 				
 				
 	
@@ -929,6 +1478,14 @@ public class BeerApp {
 				q4Pane.setVisible(true);
 				q4Pane1.setVisible(false);
 				q4Pane2.setVisible(false);
+				q4Pane3.setVisible(false);
+				q4Pane4.setVisible(false);
+				
+				employeeList_b2c.removeAllItems();
+				customerList_b2c.removeAllItems();
+				beerList_b2c.removeAllItems();
+				b2cEstablishment.removeAllItems();
+				
 				
 				
 				//update new values into b2cEstablishment combobox list
@@ -958,6 +1515,10 @@ public class BeerApp {
 					int sqlCode = error.getErrorCode();
 					String sqlState = error.getSQLState();
 					System.err.println("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					String errorPrint = ("Error occured: SQL State = " + sqlState + "SQLCode = " + sqlCode);
+					
+					popup.setVisible(true);
+					textPanePopup.setText(errorPrint);
 					
 				}
 			}
@@ -967,7 +1528,7 @@ public class BeerApp {
 		btnQuery_3.setBounds(35, 384, 300, 55);
 		frame.getContentPane().add(btnQuery_3);
 		
-		JButton btnQuery_4 = new JButton("Query 5");
+		JButton btnQuery_4 = new JButton("5. Update Salary for Employee");
 		btnQuery_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
